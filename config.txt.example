@@ -1,0 +1,8 @@
+# User details
+username = 'test@example.com'
+password = 'testPassword'
+server = None
+
+# Redis message queue
+should-use-redis = True
+redis-msg-target = 'admin@example.com'
