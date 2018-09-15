@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+from bs4 import BeautifulSoup
+import requests
+import sys
+
+q = ' '.join(sys.argv[1:])
+
+url = 'https://duckduckgo.com/html/'
+html = requests.get(url, params={'q': q},
+                    headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'}).text
+soup = BeautifulSoup(html, 'html.parser')
+
+for result in list(soup.find_all('a', class_='result__a'))[:5]:
+    print(result.get_text()[:80], '-', result['href'])

@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+top -n1 -b | head -n5

@@ -1,0 +1,3 @@
+#!/usr/bin/env python
+print("Test message")
+print("Test message 2")

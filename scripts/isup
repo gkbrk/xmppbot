@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+import requests
+import sys
+
+target = sys.argv[1]
+
+data = requests.get('https://isitup.org/{}.json'.format(target)).json()
+status = data['status_code']
+
+if status == 1:
+    print(target, 'is up')
+else:
+    print(target, 'seems to be down')

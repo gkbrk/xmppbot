@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+import sys
+import redis
+
+if len(sys.argv) == 1:
+    action = 'list'
+else:
+    action = sys.argv[1].lower()
+    args = sys.argv[2:]
+
+r = redis.Redis()
+if action == 'list':
+    todos = r.lrange('todo', 0, -1)
+    for i, t in enumerate(todos):
+        t = t.decode('utf-8')
+        print('{}. {}'.format(i, t))
+
+    if not todos:
+        print('There is nothing in your todo list')
+elif action == 'add':
+    text = ' '.join(args)
+    r.rpush('todo', text)
+    print('Added to your todo list')
+elif action == 'del':
+    if args[0] == 'all':
+        print('Clearing todo list')
+        r.delete('todo')
+    else:
+        num = int(args[0])
+        elem = r.lindex('todo', num).decode('utf-8')
+        r.lrem('todo', elem, 0)
+        print('Removed', elem, 'from your todo list')
