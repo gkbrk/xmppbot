@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+import redis
+import sys
+
+name = sys.argv[1]
+
+if len(sys.argv) == 2:
+    action = 'list'
+else:
+    action = sys.argv[2].lower()
+    args = sys.argv[3:]
+
+r = redis.Redis()
+if action == 'list':
+    todos = r.lrange(name, 0, -1)
+    for i, t in enumerate(todos):
+        t = t.decode('utf-8')
+        print('{}. {}'.format(i, t))
+
+    if not todos:
+        print('There is nothing in your {} list'.format(name))
+elif action == 'add':
+    text = ' '.join(args)
+    r.rpush(name, text)
+    print('Added to your {} list'.format(name))
+elif action == 'del':
+    if args[0] == 'all':
+        print('Clearing {} list'.format(name))
+        r.delete(name)
+    else:
+        num = int(args[0])
+        elem = r.lindex(name, num).decode('utf-8')
+        r.lrem(name, elem, 0)
+        print('Removed', elem, 'from your', name, 'list')
+elif action == 'strike':
+    target = int(args[0])
+    current = r.lindex(name, target).decode('utf-8')
+    if current[0] == '~' and current[-1] == '~':
+        updated = current[1:-1]
+        print('Un-striking', updated)
+    else:
+        updated = '~{}~'.format(current)
+        print('Striking', current)
+
+    r.lset(name, target, updated)
+elif action == 'delstrike':
+    todos = r.lrange(name, 0, -1)
+    for i, t in enumerate(todos):
+        t = t.decode('utf-8')
+        if t[0] == '~' and t[-1] == '~':
+            r.lrem(name, t)
+    print('Clearing striked items')
+elif action == 'edit':
+    target = int(args[0])
+    updated = ' '.join(args[1:])
+    r.lset(name, target, updated)
+    print('Edited item #{}'.format(target))

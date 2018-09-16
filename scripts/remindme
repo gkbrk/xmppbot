@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+import subprocess
+import sys
+
+q = ' '.join(sys.argv[1:])
+rtime, msg = q.split('.', 2)
+
+cmd = 'redis-cli publish xmpp-message "{}"'.format(msg).encode('utf-8')
+subprocess.run(['at'] + rtime.split(' '), input=cmd)
+
+print('Okay, I will remind you at', rtime)
