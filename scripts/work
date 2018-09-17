@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+./scripts/list $(basename $0) "$@"
