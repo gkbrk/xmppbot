@@ -55,3 +55,16 @@ elif action == 'edit':
     updated = ' '.join(args[1:])
     r.lset(name, target, updated)
     print('Edited item #{}'.format(target))
+elif action == 'sink':
+    todos = r.lrange(name, 0, -1)
+    strike = []
+    for i, t in enumerate(todos):
+        t = t.decode('utf-8')
+        if t[0] == '~' and t[-1] == '~':
+            strike.append(t)
+            r.lrem(name, t)
+
+    for t in strike:
+        r.rpush(name, t)
+
+    print('Sinking striked items')
