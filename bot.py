@@ -10,7 +10,8 @@ def run_script(message):
     args = parts[1:]
 
     try:
-        p = subprocess.run(['scripts/{}'.format(command)] + args, stdout=subprocess.PIPE, timeout=10)
+        p = subprocess.run(['scripts/{}'.format(command)] + args,
+                           stdout=subprocess.PIPE, timeout=10, env=os.environ.copy())
         return p.stdout.decode('utf-8')
     except Exception as e:
         p = subprocess.run(['scripts/unknown'] + parts, stdout=subprocess.PIPE)
