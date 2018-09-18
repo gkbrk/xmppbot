@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+import requests
+import re
+import json
+import sys
+import os
+
+location = ' '.join(sys.argv[1:])
+api_key = os.environ['darksky_api_key']
+
+def geocoder(query):
+    html = requests.get('https://www.openstreetmap.org/geocoder/search_geonames', params={'query': query}).text
+    match = re.search('data-lat="(.*?)" data-lon="(.*?)"', html)
+    return (match.group(1), match.group(2))
+
+if not location:
+    location = 'London, United Kingdom'
+
+lat, lon = geocoder(location)
+url = 'https://api.darksky.net/forecast/{}/{},{}'.format(api_key, lat, lon)
+data = requests.get(url, params={'units': 'si'}).json()
+
+curr = data['currently']
+today = data['daily']['data'][0]
+
+print('Current weather for', location)
+print(curr['temperature'], '°C -', curr['summary'])
+print('====')
+print('Today\'s forecast')
+print('High', today['temperatureHigh'], '°C -', 'Low', today['temperatureLow'], '°C -', today['summary'])
